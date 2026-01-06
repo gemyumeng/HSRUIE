@@ -8,6 +8,6 @@ conda activate hsruie
 
 - Test:
 ```
-test datasets: ./datasets/maps/testA
+test datasets path: ./datasets/maps/testA
 python test.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
 ```
