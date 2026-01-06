@@ -51,8 +51,6 @@ class CycleGANModel(BaseModel):
         # specify the images you want to save/display. The training/test scripts will call <BaseModel.get_current_visuals>
         visual_names_A = ['I_e']
         visual_names_B = []
-        # visual_names_A = ['rec_A']
-        # visual_names_B = []
 
 
         self.visual_names = visual_names_A + visual_names_B  # combine visualizations for A and B
@@ -63,16 +61,12 @@ class CycleGANModel(BaseModel):
             self.model_names = ['LOW', 'HIGH2', 'HIGH3']
 
         self.netVgg19 = Vgg19_out()
-        # self.netSAD = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, 'SAD', opt.norm,
-        #                                 not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
         self.netLOW = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, 'LOW', opt.norm,
                                         not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
         self.netHIGH2 = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, 'HIGH2', opt.norm,
                                        not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
         self.netHIGH3 = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, 'HIGH3', opt.norm,
                                        not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
-        # self.netUNET = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, 'UNET', opt.norm,
-        #                                   not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
         self.netSAD = SAD().cuda()
         self.netSAD.load_state_dict(torch.load('HSRUIE/checkpoints/maps_cyclegan/latest_net_SAD.pth',map_location={'cuda:1':'cuda:0'}))
 
@@ -90,7 +84,6 @@ class CycleGANModel(BaseModel):
             # initialize optimizers; schedulers will be automatically created by function <BaseModel.setup>.
             self.optimizer = torch.optim.Adam(itertools.chain(self.netLOW.parameters(),self.netHIGH2.parameters(),self.netHIGH3.parameters(),
                                                               self.netUNET.parameters()), lr=opt.lr, betas=(opt.beta1, 0.999))
-            # self.optimizer1 = torch.optim.Adam(itertools.chain(self.netUNET.parameters()), lr=opt.lr, betas=(opt.beta1, 0.999))
             self.optimizers.append(self.optimizer)
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -111,9 +104,7 @@ class CycleGANModel(BaseModel):
         """
         AtoB = self.opt.direction == 'AtoB'
         self.input = input['A'].to(self.device)
-        self.label = input['B'].to(self.device)
-        # self.real_B = input['B' if AtoB else 'A'].to(self.device)
-        self.image_paths = input['A_paths' if AtoB else 'B_paths']
+        self.image_paths = input['A_paths' ]
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
